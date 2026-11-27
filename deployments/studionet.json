@@ -1,0 +1,32 @@
+{
+  "network": "studionet",
+  "contract": "0x52F888cBb84e2690fF9695574600CfFB0CdE4c3F",
+  "deploy_tx": "0x2485706a8f101042425905f1fc910e908ed08f2d48364c995216df69485477cf",
+  "deployer": "0xde6F4E2EAD92BE954D5619E1C65B38d5F4E4B1Cc",
+  "register_tx": "0x5d44b3baf114a3436c00071a578fb0da37de2207ecc58b190d83e4b8cbf1c70c",
+  "file_incident_tx": "0xfd289c2d358766adfa3a6a15ba88111b35766ee4b5bfe5c6f094af63e64bda07",
+  "incident_url": "https://www.githubstatus.com/incidents/qn8mfv6q5hlx",
+  "incident": {
+    "affected": true,
+    "claimant": "0xde6F4E2EAD92BE954D5619E1C65B38d5F4E4B1Cc",
+    "end_utc": "2026-11-25T16:52",
+    "outage_minutes": 31,
+    "period": "2026-11",
+    "start_utc": "2026-11-25T16:21",
+    "summary": "GitHub API Requests experienced degraded performance, reported at 16:21 UTC and mitigated at 16:33 UTC, with the incident resolved at 16:52 UTC.",
+    "url": "https://www.githubstatus.com/incidents/qn8mfv6q5hlx"
+  },
+  "report": {
+    "credit_bps": 0,
+    "downtime_minutes": 31,
+    "incidents": [
+      "https://www.githubstatus.com/incidents/qn8mfv6q5hlx"
+    ],
+    "minutes_in_period": 43200,
+    "period": "2026-11",
+    "service_id": "github-api",
+    "target_bps": 9990,
+    "tier": "ok",
+    "uptime_bps": 9992
+  }
+}

@@ -68,6 +68,7 @@ process is the path to contest a decision.
 | `get_service(service_id)` | view | |
 | `get_incident(service_id, incident_url)` | view | |
 | `get_period_report(service_id, "YYYY-MM")` | view | month length incl. leap years; `tier` = `ok`/`breach`/`severe` |
+| `get_period_reports("id1,id2,…", "YYYY-MM")` | view | up to 50 services in one call (billing runs); fails on an unknown or duplicate id |
 
 ## Live run (GenLayer Studio, 27 Nov 2026)
 
@@ -84,7 +85,7 @@ then reported November: `downtime_minutes 31`, `uptime_bps 9992`, `tier ok`,
 
 ## Tests
 
-17 direct-mode tests (`genlayer-test`, milliseconds, no network):
+19 direct-mode tests (`genlayer-test`, milliseconds, no network):
 registration rules, provider-only actions, domain/https checks, lookalike
 hosts, duplicates and fragments, UTC normalisation across a month boundary,
 accumulation into the severe tier, unrelated and unresolved incidents, and the
@@ -94,7 +95,7 @@ only when the validator hits the same evidence error.
 
 ```bash
 python -m venv .venv && .venv/bin/pip install genlayer-test pytest
-.venv/bin/python -m pytest tests -q        # 17 passed
+.venv/bin/python -m pytest tests -q        # 19 passed
 ```
 
 `tests/conftest.py` works around a genlayer-test 0.30.2 incompatibility with

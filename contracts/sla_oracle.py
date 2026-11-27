@@ -35,6 +35,8 @@ DURATION_TOLERANCE_MIN = 10
 DURATION_TOLERANCE_PCT = 10
 # A single incident longer than this is treated as implausible input.
 MAX_INCIDENT_MIN = 31 * 24 * 60
+# Upper bound for get_period_reports.
+MAX_BATCH = 50
 
 # Error classes (prefixes) so validators can compare failures correctly.
 ERR_EXPECTED = "[EXPECTED]"  # deterministic business rule
@@ -338,6 +340,23 @@ Return only a JSON object with these keys:
     @gl.public.view
     def get_period_report(self, service_id: str, period: str) -> dict:
         """Monthly uptime and the credit owed, computed deterministically."""
+        return self._report(service_id, period)
+
+    @gl.public.view
+    def get_period_reports(self, service_ids_csv: str, period: str) -> list:
+        """Reports for several services in one call (e.g. a monthly billing run).
+
+        Fails as a whole on an unknown service, so a caller never mistakes a
+        typo for a clean month.
+        """
+        ids = [s.strip() for s in service_ids_csv.split(",") if s.strip()]
+        if not 1 <= len(ids) <= MAX_BATCH:
+            _fail(ERR_EXPECTED, f"give 1..{MAX_BATCH} service ids")
+        if len(set(ids)) != len(ids):
+            _fail(ERR_EXPECTED, "duplicate service id")
+        return [self._report(i, period) for i in ids]
+
+    def _report(self, service_id: str, period: str) -> dict:
         s = self._service(service_id)
         year, month = _parse_period(period)
         total = calendar.monthrange(year, month)[1] * 24 * 60

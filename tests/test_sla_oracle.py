@@ -189,3 +189,28 @@ def test_report_validates_period(direct_deploy, direct_vm, direct_owner):
         c.get_period_report("rpc-eu", "2026-13")
     r = c.get_period_report("rpc-eu", "2028-02")  # leap year, no incidents
     assert r["minutes_in_period"] == 29 * 1440 and r["uptime_bps"] == 10000 and r["tier"] == "ok"
+
+
+# ----------------------------------------------------------- batch reports
+
+def test_batch_reports(direct_deploy, direct_vm, direct_owner):
+    c = deploy(direct_deploy, direct_vm, direct_owner)
+    c.register_service("rpc-us", "Example RPC (US)", "status.example.com", 9990, 1000, 9900, 3000)
+    file(c, direct_vm)  # 90 min on rpc-eu in October
+    reports = c.get_period_reports("rpc-eu, rpc-us", "2026-10")
+    assert [r["service_id"] for r in reports] == ["rpc-eu", "rpc-us"]
+    assert reports[0]["tier"] == "breach" and reports[0]["downtime_minutes"] == 90
+    assert reports[1]["tier"] == "ok" and reports[1]["downtime_minutes"] == 0
+    assert reports[0] == c.get_period_report("rpc-eu", "2026-10")
+
+
+def test_batch_reports_reject_unknown_and_bad_input(direct_deploy, direct_vm, direct_owner):
+    c = deploy(direct_deploy, direct_vm, direct_owner)
+    with direct_vm.expect_revert("unknown service"):
+        c.get_period_reports("rpc-eu,rpc-typo", "2026-10")
+    with direct_vm.expect_revert("duplicate"):
+        c.get_period_reports("rpc-eu,rpc-eu", "2026-10")
+    with direct_vm.expect_revert("1..50"):
+        c.get_period_reports(" , ", "2026-10")
+    with direct_vm.expect_revert("YYYY-MM"):
+        c.get_period_reports("rpc-eu", "2026-1")
